@@ -1,4 +1,5 @@
 import * as RE from 'rogue-engine';
+import * as THREE from 'three';
 import { Box3, BoxBufferGeometry, BoxGeometry, Color, CylinderBufferGeometry, Mesh, MeshStandardMaterial, Object3D, SphereBufferGeometry } from 'three';
 import CannonBody from '../Shapes/CannonBody';
 import CannonBoxBody from '../Shapes/CannonBoxBody';
@@ -9,6 +10,9 @@ export default class CannonBodyWireframe extends RE.Component {
   static isEditorComponent = true;
 
   selectedObjects: Object3D[] = [];
+  wireframeMaterial = new MeshStandardMaterial({wireframe: true, emissive: new Color("#00FF00"), color: new Color("#000000")});
+
+  private objectWorldScale: THREE.Vector3 = new THREE.Vector3();
 
   update() {
     const selectedObjects = window["rogue-editor"].Project.selectedObjects as Object3D[];
@@ -53,17 +57,18 @@ export default class CannonBodyWireframe extends RE.Component {
     if (component instanceof CannonBoxBody) {
       return new Mesh(
         new BoxBufferGeometry(),
-        new MeshStandardMaterial({wireframe: true, emissive: new Color("#00FF00"), color: new Color("#000000")}),
+        this.wireframeMaterial,
       );
     }
 
     if (component instanceof CannonCylinderBody) {
-      const radiusTop = component.radiusTopOffset * component.object3d.scale.x
-      const radiusBottom = component.radiusBottomOffset * component.object3d.scale.x;
+      component.object3d.getWorldScale(this.objectWorldScale);
+      const radiusTop = component.radiusTopOffset * this.objectWorldScale.x
+      const radiusBottom = component.radiusBottomOffset * this.objectWorldScale.x;
       const height = component.heightOffset;
       return new Mesh(
         new CylinderBufferGeometry(radiusTop, radiusBottom, height, component.segments),
-        new MeshStandardMaterial({wireframe: true, emissive: new Color("#00FF00"), color: new Color("#000000")}),
+        this.wireframeMaterial,
       );
     }
 
@@ -82,7 +87,7 @@ export default class CannonBodyWireframe extends RE.Component {
 
       return new Mesh(
         new SphereBufferGeometry(compensatedRadius, segments, segments),
-        new MeshStandardMaterial({wireframe: true, emissive: new Color("#00FF00"), color: new Color("#000000")}),
+        this.wireframeMaterial,
       );
     }
 
@@ -91,11 +96,13 @@ export default class CannonBodyWireframe extends RE.Component {
 
   private updateColliderMesh(component: CannonBody, mesh: Mesh) {
     if (component instanceof CannonBoxBody) {
-      const x = component.sizeOffset.x * (component.object3d.scale.x);
-      const y = component.sizeOffset.y * (component.object3d.scale.y);
-      const z = component.sizeOffset.z * (component.object3d.scale.z);
+      component.object3d.getWorldScale(mesh.scale);
 
-      mesh.scale.set(x, y, z);
+      mesh.scale.set(
+        component.sizeOffset.x * (mesh.scale.x),
+        component.sizeOffset.y * (mesh.scale.y),
+        component.sizeOffset.z * (mesh.scale.z)
+      );
     }
 
     if (component instanceof CannonCylinderBody) {
@@ -115,7 +122,7 @@ export default class CannonBodyWireframe extends RE.Component {
         }
       }
 
-      mesh.scale.copy(component.object3d.scale);
+      component.object3d.getWorldScale(mesh.scale);
     }
 
     if (component instanceof CannonSphereBody) {
@@ -139,8 +146,8 @@ export default class CannonBodyWireframe extends RE.Component {
       }
     }
 
-    mesh.position.copy(component.object3d.position);
-    mesh.rotation.copy(component.object3d.rotation);
+    component.object3d.getWorldPosition(mesh.position);
+    component.object3d.getWorldQuaternion(mesh.quaternion);
   }
 }
 

@@ -1,7 +1,7 @@
 import * as RE from 'rogue-engine';
 import CannonConfig from '../CannonConfig';
-import { Vector3, Quaternion } from 'three';
 import * as CANNON from 'cannon-es';
+import * as THREE from 'three';
 
 export default class CannonBody extends RE.Component {
   cannonConfig: CannonConfig;
@@ -10,6 +10,17 @@ export default class CannonBody extends RE.Component {
   angularDamping = 0;
   linearDamping = 0;
   mass = 1;
+
+  private worldPos = new THREE.Vector3();
+  private worldRot = new THREE.Quaternion();
+  private newBodyPos = new CANNON.Vec3();
+  private newBodyRot = new CANNON.Quaternion();
+
+  private newPos = new THREE.Vector3();
+  private newRot = new THREE.Quaternion();
+  private matrixA = new THREE.Matrix4();
+  private matrixB = new THREE.Matrix4();
+  private matrixC = new THREE.Matrix4();
 
   awake() {
     this.setCannonConfig();
@@ -51,39 +62,56 @@ export default class CannonBody extends RE.Component {
   protected createShape(): void {};
 
   protected copyObjectTransform() {
-    const newPos = new CANNON.Vec3(
-      this.object3d.position.x,
-      this.object3d.position.y,
-      this.object3d.position.z
+    this.object3d.getWorldPosition(this.worldPos);
+    this.object3d.getWorldQuaternion(this.worldRot);
+
+    this.newBodyPos.set(
+      this.worldPos.x,
+      this.worldPos.y,
+      this.worldPos.z
     );
 
-    const newQuaternion = new CANNON.Quaternion(
-      this.object3d.quaternion.x,
-      this.object3d.quaternion.y,
-      this.object3d.quaternion.z,
-      this.object3d.quaternion.w
+    this.newBodyRot.set(
+      this.worldRot.x,
+      this.worldRot.y,
+      this.worldRot.z,
+      this.worldRot.w
     );
 
-    this.body.quaternion.copy(newQuaternion);
-    this.body.position.copy(newPos);
+    this.body.quaternion.copy(this.newBodyRot);
+    this.body.position.copy(this.newBodyPos);
   }
 
   protected copyBodyTransform() {
-    const newPos = new Vector3(
+    this.copyBodyPosition();
+    this.copyBodyRotation();
+  }
+
+  private copyBodyPosition() {
+    this.newPos.set(
       this.body.position.x,
       this.body.position.y,
       this.body.position.z
     );
 
-    const newQuaternion = new Quaternion(
+    this.object3d.parent?.worldToLocal(this.newPos);
+    this.object3d.position.copy(this.newPos);
+  }
+
+  private copyBodyRotation() {
+    this.newRot.set(
       this.body.quaternion.x,
       this.body.quaternion.y,
       this.body.quaternion.z,
       this.body.quaternion.w
     );
 
-    this.object3d.position.copy(newPos);
-    this.object3d.quaternion.copy(newQuaternion);
+    this.matrixA.makeRotationFromQuaternion(this.newRot);
+    this.object3d.updateMatrixWorld();
+    this.matrixB.getInverse((this.object3d.parent as THREE.Object3D).matrixWorld);
+    this.matrixC.extractRotation(this.matrixB);
+    this.matrixA.premultiply(this.matrixC);
+    this.object3d.quaternion.setFromRotationMatrix(this.matrixA);
   }
 
   private updatePhysics() {
