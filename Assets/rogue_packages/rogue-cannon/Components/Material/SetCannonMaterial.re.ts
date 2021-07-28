@@ -1,24 +1,19 @@
 import * as RE from 'rogue-engine';
-import CannonConfig from '../CannonConfig';
 import * as CANNON from 'cannon-es';
-import CannonBody from '../Shapes/CannonBody';
+import CannonBody from '../CannonBody.re';
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 
 export default class SetCannonMaterial extends RE.Component {
-  cannonConfig: CannonConfig;
   material: CANNON.Material;
 
   @RE.Prop("String") materialName: string;
-
-  awake() {
-    this.setCannonConfig();
-  }
 
   start() {
     this.setMaterial();
   }
 
   private getMaterial() {
-    return this.cannonConfig.world.materials.find(material => material.name === this.materialName)
+    return CannonPhysics.world.materials.find(material => material.name === this.materialName)
   }
 
   private setMaterial() {
@@ -31,15 +26,7 @@ export default class SetCannonMaterial extends RE.Component {
     const cannonBody = RE.getComponent(CannonBody, this.object3d);
 
     if (cannonBody) {
-      cannonBody.shape.material = this.material;
-    }
-  }
-
-  private setCannonConfig() {
-    const config = RE.App.currentScene.getObjectByName("Config");
-
-    if (config) {
-      this.cannonConfig = RE.getComponent(CannonConfig, config) as CannonConfig;
+      cannonBody.body.shapes.forEach(shape => (shape.material = this.material));
     }
   }
 }

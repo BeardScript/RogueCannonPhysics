@@ -1,19 +1,15 @@
 import * as RE from 'rogue-engine';
-import CannonConfig from '../CannonConfig';
 import * as CANNON from 'cannon-es';
-import CannonBody from '../Shapes/CannonBody';
-
-const { Prop } = RE;
+import CannonBody from '../CannonBody.re';
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 
 export default class CannonMaterial extends RE.Component {
-  cannonConfig: CannonConfig;
   material: CANNON.Material;
 
-  @Prop("Number") friction: number;
-  @Prop("Number") restitution: number;
+  @RE.Prop("Number") friction: number;
+  @RE.Prop("Number") restitution: number;
 
   awake() {
-    this.setCannonConfig();
     this.createMaterial();
   }
 
@@ -29,22 +25,14 @@ export default class CannonMaterial extends RE.Component {
     // if (this.restitution < 0)
     this.material.restitution = this.restitution;
 
-    this.cannonConfig.world.addMaterial(this.material);
+    CannonPhysics.world.addMaterial(this.material);
   }
 
   private setMaterial() {
     const cannonBody = RE.getComponent(CannonBody, this.object3d);
 
     if (cannonBody) {
-      cannonBody.shape.material = this.material;
-    }
-  }
-
-  private setCannonConfig() {
-    const config = RE.App.currentScene.getObjectByName("Config");
-
-    if (config) {
-      this.cannonConfig = RE.getComponent(CannonConfig, config) as CannonConfig;
+      cannonBody.body.shapes.forEach(shape => shape.material = this.material);
     }
   }
 }

@@ -5,6 +5,7 @@ export default class Component extends Lifecycle {
     private _object3d;
     private _isReady;
     interface: ComponentInterface;
+    enabled: boolean;
     constructor(name: string, object3d: Object3D);
     /**
      * The name by which to search a component.

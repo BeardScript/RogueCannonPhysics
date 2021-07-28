@@ -1,9 +1,8 @@
 import * as RE from 'rogue-engine';
-import CannonConfig from '../CannonConfig';
 import * as CANNON from 'cannon-es';
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 
 export default class CannonContactMaterial extends RE.Component {
-  cannonConfig: CannonConfig;
   contactMaterial: CANNON.ContactMaterial;
 
   @RE.Prop("String") materialA: string;
@@ -11,16 +10,12 @@ export default class CannonContactMaterial extends RE.Component {
   @RE.Prop("Number") friction: number;
   @RE.Prop("Number") restitution: number;
 
-  awake() {
-    this.setCannonConfig();
-  }
-
   start() {
     this.createContactMaterial();
   }
 
   private getMaterial(materialName: string) {
-    return this.cannonConfig.world.materials.find(material => material.name === materialName)
+    return CannonPhysics.world.materials.find(material => material.name === materialName)
   }
 
   private createContactMaterial() {
@@ -37,15 +32,7 @@ export default class CannonContactMaterial extends RE.Component {
     this.contactMaterial.friction = this.friction;
     this.contactMaterial.restitution = this.restitution;
 
-    this.cannonConfig.world.addContactMaterial(this.contactMaterial);
-  }
-
-  private setCannonConfig() {
-    const config = RE.App.currentScene.getObjectByName("Config");
-
-    if (config) {
-      this.cannonConfig = RE.getComponent(CannonConfig, config) as CannonConfig;
-    }
+    CannonPhysics.world.addContactMaterial(this.contactMaterial);
   }
 }
 

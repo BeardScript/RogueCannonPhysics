@@ -20,6 +20,8 @@ export default abstract class SceneController extends Lifecycle {
     protected _request: number;
     protected _stop: () => void;
     private _deltaTime;
+    private _pageVisibilityHandler;
+    constructor();
     get defaultRenderFunc(): () => void;
     get deltaTime(): number;
     get height(): number;

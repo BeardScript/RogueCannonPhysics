@@ -1,40 +1,25 @@
 import * as RE from 'rogue-engine';
-import CannonConfig from '../CannonConfig';
-import { Vector3, Object3D } from 'three';
+import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import CannonBody from '../Shapes/CannonBody';
-
-const { Prop } = RE;
+import CannonBody from '../CannonBody.re';
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 
 export default class CannonSpring extends RE.Component {
-  cannonConfig: CannonConfig;
   spring: CANNON.Spring;
   targetBody: CANNON.Body;
   
-  @Prop("Object3D") target: Object3D;
-  @Prop("Vector3") anchorA: Vector3 = new Vector3();
-  @Prop("Vector3") anchorB: Vector3 = new Vector3();
-  @Prop("Number") restLength: number = 0;
-  @Prop("Number") stiffness: number = 50;
-  @Prop("Number") damping: number = 1;
-
-  awake() {
-    this.setCannonConfig();
-  }
+  @RE.Prop("Object3D") target: THREE.Object3D;
+  @RE.Prop("Vector3") anchorA: THREE.Vector3 = new THREE.Vector3();
+  @RE.Prop("Vector3") anchorB: THREE.Vector3 = new THREE.Vector3();
+  @RE.Prop("Number") restLength: number = 0;
+  @RE.Prop("Number") stiffness: number = 50;
+  @RE.Prop("Number") damping: number = 1;
 
   start() {
     this.createSpring();
   }
 
-  private setCannonConfig() {
-    const config = RE.App.currentScene.getObjectByName("Config");
-
-    if (config) {
-      this.cannonConfig = RE.getComponent(CannonConfig, config) as CannonConfig;
-    }
-  }
-
-  private getCannonBodyComponent(object3d: Object3D): CannonBody {
+  private getCannonBodyComponent(object3d: THREE.Object3D): CannonBody {
     const cannonBody = RE.getComponent(CannonBody, object3d);
 
     if (!cannonBody) {
@@ -62,11 +47,11 @@ export default class CannonSpring extends RE.Component {
       damping: this.damping,
     });
 
-    this.cannonConfig.world.addEventListener('postStep', this.applyForce)
+    CannonPhysics.world.addEventListener('postStep', this.applyForce)
   }
 
   onBeforeRemoved() {
-    this.cannonConfig.world.removeEventListener('postStep', this.applyForce);
+    CannonPhysics.world.removeEventListener('postStep', this.applyForce);
   }
 }
 

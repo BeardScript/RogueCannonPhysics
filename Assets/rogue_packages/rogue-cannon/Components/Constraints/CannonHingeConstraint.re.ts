@@ -1,20 +1,19 @@
 import * as RE from 'rogue-engine';
-import { Vector3, Object3D } from 'three';
+import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonConstraint from './CannonConstraint';
-
-const { Prop } = RE;
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 
 export default class CannonHingeConstraint extends CannonConstraint {
   constraint: CANNON.HingeConstraint;
 
-  @Prop("Object3D") target: Object3D;
-  @Prop("Vector3") pivotA: Vector3 = new Vector3(0.1, 0, 0);
-  @Prop("Vector3") axisA: Vector3 = new Vector3(0, 1, 0);
-  @Prop("Vector3") pivotB: Vector3 = new Vector3(-1, 0, 0);
-  @Prop("Vector3") axisB: Vector3 = new Vector3(0, 1, 0);
-  @Prop("Boolean") collideConnected: boolean;
-  @Prop("Number") maxForce: number = 1e6;
+  @RE.Prop("Object3D") target: THREE.Object3D;
+  @RE.Prop("Vector3") pivotA: THREE.Vector3 = new THREE.Vector3(0.1, 0, 0);
+  @RE.Prop("Vector3") axisA: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
+  @RE.Prop("Vector3") pivotB: THREE.Vector3 = new THREE.Vector3(-1, 0, 0);
+  @RE.Prop("Vector3") axisB: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
+  @RE.Prop("Boolean") collideConnected: boolean;
+  @RE.Prop("Number") maxForce: number = 1e6;
 
   protected createConstraint() {
     if (!this.target) throw "CannonHinge requires a target";
@@ -31,7 +30,7 @@ export default class CannonHingeConstraint extends CannonConstraint {
       maxForce: this.maxForce,
     });
 
-    this.cannonConfig.world.addConstraint(this.constraint);
+    CannonPhysics.world.addConstraint(this.constraint);
   }
 }
 

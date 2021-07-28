@@ -1,16 +1,14 @@
 import * as RE from 'rogue-engine';
-import { Object3D } from 'three';
+import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonConstraint from './CannonConstraint';
-
-const { Prop } = RE;
-
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 export default class CannonDistanceConstraint extends CannonConstraint {
   constraint: CANNON.DistanceConstraint;
 
-  @Prop("Object3D") target: Object3D;
-  @Prop("Number") distance: number = 1;
-  @Prop("Number") maxForce: number = 1e6;
+  @RE.Prop("Object3D") target: THREE.Object3D;
+  @RE.Prop("Number") distance: number = 1;
+  @RE.Prop("Number") maxForce: number = 1e6;
 
   protected createConstraint() {
     if (!this.target) throw "CannonHinge requires a target";
@@ -20,7 +18,7 @@ export default class CannonDistanceConstraint extends CannonConstraint {
 
     this.constraint = new CANNON.DistanceConstraint(bodyA, bodyB, this.distance, this.maxForce);
 
-    this.cannonConfig.world.addConstraint(this.constraint);
+    CannonPhysics.world.addConstraint(this.constraint);
   }
 }
 

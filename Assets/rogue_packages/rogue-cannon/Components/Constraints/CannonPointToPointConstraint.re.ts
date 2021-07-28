@@ -1,17 +1,16 @@
 import * as RE from 'rogue-engine';
-import { Vector3, Object3D } from 'three';
+import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonConstraint from './CannonConstraint';
-
-const { Prop } = RE;
+import { CannonPhysics } from '../../Lib/CannonPhysics';
 
 export default class CannonPointToPointConstraint extends CannonConstraint {
   constraint: CANNON.PointToPointConstraint;
 
-  @Prop("Object3D") target: Object3D;
-  @Prop("Vector3") privotA: Vector3 = new Vector3();
-  @Prop("Vector3") privotB: Vector3 = new Vector3();
-  @Prop("Number") maxForce: number = 1e6;
+  @RE.Prop("Object3D") target: THREE.Object3D;
+  @RE.Prop("Vector3") privotA: THREE.Vector3 = new THREE.Vector3();
+  @RE.Prop("Vector3") privotB: THREE.Vector3 = new THREE.Vector3();
+  @RE.Prop("Number") maxForce: number = 1e6;
 
   protected createConstraint() {
     if (!this.target) throw "CannonHinge requires a target";
@@ -27,7 +26,7 @@ export default class CannonPointToPointConstraint extends CannonConstraint {
       this.maxForce
     );
 
-    this.cannonConfig.world.addConstraint(this.constraint);
+    CannonPhysics.world.addConstraint(this.constraint);
   }
 }
 
