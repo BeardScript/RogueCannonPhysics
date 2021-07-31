@@ -120,20 +120,10 @@ export default class CannonBodyWireframe extends RE.Component {
     }
 
     if (component instanceof CannonSphere) {
-      component.bbox = new THREE.Box3().setFromObject(component.object3d);
-      const bbox = component.bbox;
-      const xDiff = (bbox.max.x - bbox.min.x);
-      const yDiff = (bbox.max.y - bbox.min.y);
-      const zDiff = (bbox.max.z - bbox.min.z);
+      const scale = component.object3d.scale;
+      const maxSide = Math.max(scale.x, scale.y, scale.z);
 
-      let maxSide = Math.max(xDiff, yDiff, zDiff);
-
-      if (maxSide < 0) {
-        const scale = component.object3d.scale;
-        maxSide = Math.max(scale.x, scale.y, scale.z);
-      }
-
-      const radius = component.radiusOffset * (maxSide/2);
+      const radius = component.radiusOffset * (maxSide);
       const compensatedRadius = radius + (radius * 0.01);
       const segments = 15;
 
@@ -178,21 +168,10 @@ export default class CannonBodyWireframe extends RE.Component {
     }
 
     if (component instanceof CannonSphere) {
-      component.bbox = new THREE.Box3().setFromObject(component.object3d);
+      const scale = component.object3d.scale;
+      const maxSide = Math.max(scale.x, scale.y, scale.z);
 
-      const bbox = component.bbox;
-      const xDiff = (bbox.max.x - bbox.min.x);
-      const yDiff = (bbox.max.y - bbox.min.y);
-      const zDiff = (bbox.max.z - bbox.min.z);
-
-      let maxSide = Math.max(xDiff, yDiff, zDiff);
-
-      if (maxSide < 0) {
-        const scale = component.object3d.scale;
-        maxSide = Math.max(scale.x, scale.y, scale.z);
-      }
-
-      const radius = component.radiusOffset * (maxSide/2);
+      const radius = component.radiusOffset * (maxSide);
 
       if (mesh.geometry instanceof THREE.SphereBufferGeometry) {
         if (mesh.geometry.parameters.radius !== radius) {

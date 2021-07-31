@@ -9,23 +9,11 @@ export default class CannonSphere extends CannonShape {
   bbox: THREE.Box3;
 
   protected createShape() {
-    this.bbox = new THREE.Box3().setFromObject(this.object3d);
-
-    const bbox = this.bbox;
-
-    const xDiff = (bbox.max.x - bbox.min.x);
-    const yDiff = (bbox.max.y - bbox.min.y);
-    const zDiff = (bbox.max.z - bbox.min.z);
-
-    let maxSide = Math.max(xDiff, yDiff, zDiff);
-
-    if (maxSide < 0) {
-      const scale = this.object3d.scale;
-      maxSide = Math.max(scale.x, scale.y, scale.z);
-    }
+    const scale = this.object3d.scale;
+    const maxSide = Math.max(scale.x, scale.y, scale.z);
 
     this.shape = new CANNON.Sphere(
-      this.radiusOffset * (maxSide/2)
+      this.radiusOffset * (maxSide)
     );
   }
 }
