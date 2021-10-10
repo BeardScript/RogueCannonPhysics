@@ -25,8 +25,14 @@ router.post('/setScenePlayerConfig', (req, res, next) => {
   res.send("Ok");
 });
 
+let setScenePlayerConfigOK = () => {};
+
 router.get('/getScenePlayerConfig', (req, res, next) => {
-  res.send(config);
+  setScenePlayerConfigOK = () => {
+    res.send(config);
+  };
+
+  process.send("getScenePlayerConfig");
 });
 
 router.get('*', (req, res, next) => {
@@ -43,5 +49,11 @@ const replaceEscapeCharacters = ( text ) => {
   else
     return text;
 }
+
+process.on("message", (message) => {
+  if (message === "setScenePlayerConfigOK") {
+    setScenePlayerConfigOK();
+  }
+});
 
 app.listen(port);

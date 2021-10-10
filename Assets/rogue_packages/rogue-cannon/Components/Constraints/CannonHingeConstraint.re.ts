@@ -2,7 +2,7 @@ import * as RE from 'rogue-engine';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonConstraint from './CannonConstraint';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonHingeConstraint extends CannonConstraint {
   constraint: CANNON.HingeConstraint;
@@ -30,7 +30,7 @@ export default class CannonHingeConstraint extends CannonConstraint {
       maxForce: this.maxForce,
     });
 
-    CannonPhysics.world.addConstraint(this.constraint);
+    RogueCannon.getWorld().addConstraint(this.constraint);
   }
 }
 

@@ -4,6 +4,7 @@ export default class Component extends Lifecycle {
     private _name;
     private _object3d;
     private _isReady;
+    uuid: string;
     interface: ComponentInterface;
     enabled: boolean;
     constructor(name: string, object3d: Object3D);

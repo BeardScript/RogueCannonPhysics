@@ -18,6 +18,8 @@ export default class CannonBodyWireframe extends RE.Component {
   private handleOnComponentAdded = {stop: () => {}};
   private handleOnComponentRemoved = {stop: () => {}};
 
+  private handleOnPlay = {stop: () => {}};
+
   private resetHandler = (component: RE.Component) => {
     component instanceof CannonShape && this.setupImpostors();
   }
@@ -25,9 +27,16 @@ export default class CannonBodyWireframe extends RE.Component {
   start() {
     this.handleOnComponentAdded.stop();
     this.handleOnComponentRemoved.stop();
+    this.handleOnPlay.stop();
 
     this.handleOnComponentAdded = RE.onComponentAdded(this.resetHandler);
     this.handleOnComponentRemoved = RE.onComponentRemoved(this.resetHandler);
+
+    this.handleOnPlay = RE.Runtime.onPlay(() => {
+      this.handleOnComponentAdded.stop();
+      this.handleOnComponentRemoved.stop();
+      this.cleanupImpostors();
+    });
   }
 
   afterUpdate() {
@@ -194,6 +203,7 @@ export default class CannonBodyWireframe extends RE.Component {
   onBeforeRemoved() {
     this.handleOnComponentAdded.stop();
     this.handleOnComponentRemoved.stop();
+    this.handleOnPlay.stop();
     this.cleanupImpostors();
   }
 }

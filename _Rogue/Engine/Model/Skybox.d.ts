@@ -1,4 +1,4 @@
-import { Texture } from "three";
+import { Mesh, Texture } from "three";
 declare class SkyboxClass {
     private _enabled;
     private _mode;
@@ -20,7 +20,12 @@ declare class SkyboxClass {
     private _cubemapRight;
     private _cubemapLeft;
     private _cubeTexture;
+    private _layers;
     sunSpeed: number;
+    get layers(): number;
+    set layers(layers: number);
+    get sky(): any;
+    get cubemapSky(): Mesh<import("three").Geometry | import("three").BufferGeometry, import("three").Material | import("three").Material[]>;
     get enabled(): boolean;
     set enabled(value: boolean);
     get mode(): 'procedural' | 'cubemap' | '360';
@@ -66,6 +71,7 @@ export declare let Skybox: SkyboxClass;
 export declare type SkyboxSerialization = {
     _enabled: boolean;
     _mode: 'procedural' | 'cubemap' | '360';
+    layers: number;
     _showSun?: boolean;
     inclination?: number;
     azimuth?: number;

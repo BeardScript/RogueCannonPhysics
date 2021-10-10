@@ -1,7 +1,7 @@
 import * as RE from 'rogue-engine';
 import * as CANNON from 'cannon-es';
 import CannonBody from '../CannonBody.re';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class SetCannonMaterial extends RE.Component {
   material: CANNON.Material;
@@ -13,7 +13,7 @@ export default class SetCannonMaterial extends RE.Component {
   }
 
   private getMaterial() {
-    return CannonPhysics.world.materials.find(material => material.name === this.materialName)
+    return RogueCannon.getWorld().materials.find(material => material.name === this.materialName)
   }
 
   private setMaterial() {

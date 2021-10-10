@@ -2,7 +2,7 @@ import * as RE from 'rogue-engine';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonBody from '../CannonBody.re';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonSpring extends RE.Component {
   spring: CANNON.Spring;
@@ -47,11 +47,11 @@ export default class CannonSpring extends RE.Component {
       damping: this.damping,
     });
 
-    CannonPhysics.world.addEventListener('postStep', this.applyForce)
+    RogueCannon.getWorld().addEventListener('postStep', this.applyForce)
   }
 
   onBeforeRemoved() {
-    CannonPhysics.world.removeEventListener('postStep', this.applyForce);
+    RogueCannon.getWorld().removeEventListener('postStep', this.applyForce);
   }
 }
 

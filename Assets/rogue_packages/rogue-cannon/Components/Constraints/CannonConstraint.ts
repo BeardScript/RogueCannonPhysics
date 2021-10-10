@@ -2,7 +2,7 @@ import * as RE from 'rogue-engine';
 import { Object3D } from 'three';
 import * as CANNON from 'cannon-es';
 import CannonBody from '../CannonBody.re';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonConstraint extends RE.Component {
   constraint: CANNON.Constraint;
@@ -25,6 +25,6 @@ export default class CannonConstraint extends RE.Component {
   protected createConstraint() {}
 
   onRemoved() {
-    CannonPhysics.world.removeConstraint(this.constraint);
+    RogueCannon.getWorld().removeConstraint(this.constraint);
   }
 }

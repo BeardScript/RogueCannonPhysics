@@ -31,6 +31,7 @@ export declare class App {
             name: string;
             uuid: string;
         }[];
+        lanIP?: string;
         assetPaths: {
             [uuid: string]: string;
         };
@@ -44,7 +45,7 @@ export declare class App {
         assetPaths: {
             [uuid: string]: string;
         };
-        lanIP: string;
+        lanIP?: string;
     }): void;
     static play(config: {
         title: string;

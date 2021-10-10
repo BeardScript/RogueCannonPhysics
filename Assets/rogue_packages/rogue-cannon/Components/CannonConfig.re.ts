@@ -1,21 +1,22 @@
 import * as RE from 'rogue-engine';
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { CannonPhysics } from '../Lib/CannonPhysics';
+import * as RogueCannon from '../Lib/RogueCannon';
 
 export default class CannonConfig extends RE.Component {
   private _defaultFriction = 0.01;
   private _defaultRestitution = 0;
 
-  @RE.Prop("Number") step: number = 1/60;
+  @RE.Prop("Number") maxSubSteps: number = 1;
 
-  @RE.Prop("Number") 
+  @RE.Prop("Number")
   get defaultFriction() {
     return this._defaultFriction;
   }
 
   set defaultFriction(value: number) {
     this._defaultFriction = value;
+    RogueCannon.getWorld().defaultContactMaterial.friction = value;
   }
 
   @RE.Prop("Number") 
@@ -25,21 +26,21 @@ export default class CannonConfig extends RE.Component {
 
   set defaultRestitution(value: number) {
     this._defaultRestitution = value;
+    RogueCannon.getWorld().defaultContactMaterial.restitution = value;
   }
 
   @RE.Prop("Vector3") gravity: THREE.Vector3 = new THREE.Vector3(0, -9.82, 0);
 
   awake() {
-    CannonPhysics.world = new CANNON.World();
-    CannonPhysics.world.gravity.set(this.gravity.x, this.gravity.y, this.gravity.z);
-    CannonPhysics.world.broadphase = new CANNON.NaiveBroadphase();
-    CannonPhysics.world.defaultContactMaterial.friction = this.defaultFriction;
-    CannonPhysics.world.defaultContactMaterial.restitution = this.defaultRestitution;
+    RogueCannon.setWorld(new CANNON.World());
+    RogueCannon.getWorld().gravity.set(this.gravity.x, this.gravity.y, this.gravity.z);
+    RogueCannon.getWorld().broadphase = new CANNON.NaiveBroadphase();
+    RogueCannon.getWorld().defaultContactMaterial.friction = this.defaultFriction;
+    RogueCannon.getWorld().defaultContactMaterial.restitution = this.defaultRestitution;
   }
 
-  afterUpdate() {
-    // CannonPhysics.world.gravity.set(this.gravity.x, this.gravity.y, this.gravity.z);
-    CannonPhysics.world.step(this.step, RE.Runtime.deltaTime, 1);
+  beforeUpdate() {
+    RogueCannon.getWorld().step(RE.Runtime.deltaTime, RE.Runtime.deltaTime, this.maxSubSteps || 1);
   }
 }
 

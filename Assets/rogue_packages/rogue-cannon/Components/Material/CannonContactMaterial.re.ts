@@ -1,6 +1,6 @@
 import * as RE from 'rogue-engine';
 import * as CANNON from 'cannon-es';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonContactMaterial extends RE.Component {
   contactMaterial: CANNON.ContactMaterial;
@@ -15,7 +15,7 @@ export default class CannonContactMaterial extends RE.Component {
   }
 
   private getMaterial(materialName: string) {
-    return CannonPhysics.world.materials.find(material => material.name === materialName)
+    return RogueCannon.getWorld().materials.find(material => material.name === materialName)
   }
 
   private createContactMaterial() {
@@ -32,7 +32,7 @@ export default class CannonContactMaterial extends RE.Component {
     this.contactMaterial.friction = this.friction;
     this.contactMaterial.restitution = this.restitution;
 
-    CannonPhysics.world.addContactMaterial(this.contactMaterial);
+    RogueCannon.getWorld().addContactMaterial(this.contactMaterial);
   }
 }
 

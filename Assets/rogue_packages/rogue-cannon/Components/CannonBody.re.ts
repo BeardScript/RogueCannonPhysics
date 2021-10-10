@@ -1,7 +1,7 @@
 import * as RE from 'rogue-engine';
 import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
-import { CannonPhysics } from '../Lib/CannonPhysics';
+import * as RogueCannon from '../Lib/RogueCannon';
 
 export default class CannonBody extends RE.Component {
   protected _isTrigger = false;
@@ -109,18 +109,35 @@ export default class CannonBody extends RE.Component {
   private matrixB = new THREE.Matrix4();
   private matrixC = new THREE.Matrix4();
 
-  private onCollideCB: (event: {body: CANNON.Body, target: CANNON.Body, contact: CANNON.ContactEquation}) => void | undefined;
+  private onCollideCB: (event: {other: CANNON.Body, contact: CANNON.ContactEquation}) => void | undefined;
+
+  private triggerCollision;
+
+  static findByBody(body: CANNON.Body) {
+    let bodyComponent: undefined | CannonBody;
+
+    RE.traverseComponents(component => {
+      if (bodyComponent) return;
+
+      if (component instanceof CannonBody && component.body === body) {
+        bodyComponent = component;
+      }
+    });
+
+    return bodyComponent;
+  }
 
   awake() {
     this.createBody();
 
     RE.Runtime.onStop(() => {
-      this.onCollideCB && this.body.removeEventListener('collide', this.onCollideCB);
+      this.handleOnCollide && this.body.removeEventListener('collide', this.handleOnCollide);
     });
   }
 
   start() {
-    CannonPhysics.world.addBody(this.body);
+    RogueCannon.getWorld().addBody(this.body);
+    this.copyObjectTransform();
   }
 
   update() {
@@ -133,15 +150,34 @@ export default class CannonBody extends RE.Component {
     this.updatePhysics();
   }
 
-  onBeforeRemoved() {
-    CannonPhysics.world.removeBody(this.body);
+  afterUpdate() {
+    if (this.triggerCollision !== undefined && this.onCollideCB) {
+      this.onCollideCB(this.triggerCollision);
+      this.triggerCollision = undefined;
+    }
   }
 
-  onCollide(callback: (event: {body: CANNON.Body, target: CANNON.Body, contact: CANNON.ContactEquation}) => void) {
-    this.onCollideCB && this.body.removeEventListener('collide', this.onCollideCB);
+  onBeforeRemoved() {
+    RogueCannon.getWorld().removeBody(this.body);
+  }
+
+  onCollide(callback: (event: {other: CANNON.Body, contact: CANNON.ContactEquation}) => void) {
     this.onCollideCB = callback;
 
-    this.body.addEventListener('collide', this.onCollideCB);
+    this.body.removeEventListener('collide', this.handleOnCollide);
+    this.body.addEventListener('collide', this.handleOnCollide);
+  }
+
+  private handleOnCollide = (event: {body: CANNON.Body, target: CANNON.Body, contact: CANNON.ContactEquation}) => {
+    const bj = event.contact.bj;
+    const bi = event.contact.bi;
+
+    const collision = {
+      other: bj !== this.body ? bj : bi,
+      contact: event.contact,
+    }
+
+    this.triggerCollision = collision;
   }
 
   private getBodyType() {
@@ -170,6 +206,8 @@ export default class CannonBody extends RE.Component {
   protected createShape(): void {};
 
   protected copyObjectTransform() {
+    this.object3d.parent?.updateMatrixWorld(true);
+
     this.object3d.getWorldPosition(this.worldPos);
     this.object3d.getWorldQuaternion(this.worldRot);
 
@@ -201,6 +239,8 @@ export default class CannonBody extends RE.Component {
       this.body.position.y,
       this.body.position.z
     );
+    
+    if (!this.object3d.parent) return;
 
     this.object3d.parent?.worldToLocal(this.newPos);
     this.object3d.position.copy(this.newPos);

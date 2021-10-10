@@ -2,7 +2,7 @@ import * as RE from 'rogue-engine';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonBody from '../CannonBody.re';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonRaycastVehicle extends RE.Component {
   @RE.Prop("Object3D") chasis: THREE.Object3D;
@@ -21,7 +21,7 @@ export default class CannonRaycastVehicle extends RE.Component {
   vehicle: CANNON.RaycastVehicle;
 
   start() {
-    if (!CannonPhysics.world) return;
+    if (!RogueCannon.getWorld()) return;
 
     let body = RE.getComponent(CannonBody, this.object3d);
 
@@ -44,7 +44,7 @@ export default class CannonRaycastVehicle extends RE.Component {
       indexRightAxis: 0,
     });
 
-    this.vehicle.addToWorld(CannonPhysics.world);
+    this.vehicle.addToWorld(RogueCannon.getWorld());
   }
 }
 

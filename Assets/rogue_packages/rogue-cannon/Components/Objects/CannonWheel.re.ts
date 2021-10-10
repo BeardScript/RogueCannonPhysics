@@ -2,7 +2,7 @@ import * as RE from 'rogue-engine';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonRaycastVehicle from './CannonRaycastVehicle.re';
-import { CannonPhysics } from '../../Lib/CannonPhysics';
+import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonWheel extends RE.Component {
   @RE.Prop("Object3D") wheel: THREE.Object3D;
@@ -50,9 +50,9 @@ export default class CannonWheel extends RE.Component {
 
     if (!this.wheel) return;
 
-    if (!CannonPhysics.world) return;
+    if (!RogueCannon.getWorld()) return;
 
-    CannonPhysics.world.addEventListener('postStep', this.postStep);
+    RogueCannon.getWorld().addEventListener('postStep', this.postStep);
   }
 
   postStep = () => {
@@ -79,7 +79,7 @@ export default class CannonWheel extends RE.Component {
   }
 
   onBeforeRemoved() {
-    CannonPhysics.world.removeEventListener('postStep', this.postStep);
+    RogueCannon.getWorld().removeEventListener('postStep', this.postStep);
   }
 }
 
