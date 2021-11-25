@@ -72,7 +72,7 @@ export default class CannonWheel extends RE.Component {
 
     this.matrixA.makeRotationFromQuaternion(this.wheel.quaternion);
     this.wheel.updateMatrixWorld();
-    this.matrixB.getInverse((this.wheel.parent as THREE.Object3D).matrixWorld);
+    this.matrixB.copy((this.wheel.parent as THREE.Object3D).matrixWorld).invert();
     this.matrixC.extractRotation(this.matrixB);
     this.matrixA.premultiply(this.matrixC);
     this.wheel.quaternion.setFromRotationMatrix(this.matrixA);

@@ -1,20 +1,21 @@
 {
   "name": "roguetemplateproject",
-  "version": "1.0.0",
+  "version": "3.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "cross-env NODE_ENV=production webpack --progress"
   },
-  "author": "",
+  "author": "BeardScript",
   "license": "ISC",
   "dependencies": {
     "cannon-es": "^0.18.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "glob": "^7.1.6",
-    "three": "0.119.1"
+    "three": "0.134.0",
+    "@types/three": "0.134.0"
   },
   "devDependencies": {
     "cross-env": "^5.2.1",

@@ -11,7 +11,7 @@ declare class AssetManagerClass {
     private _assetPaths;
     private _loadingAssets;
     get assets(): {
-        [uuid: string]: Object3D | Material | Texture | AudioAsset;
+        [uuid: string]: Object3D<import("three").Event> | Texture | Material | AudioAsset;
     };
     get assetConfigs(): {
         [uuid: string]: AssetConfig;
@@ -62,9 +62,9 @@ declare class AssetManagerClass {
     }): void;
     getAssetPath(uuid: string): string | undefined;
     registerAsset(asset: Object3D | AudioAsset | Material | Texture): void;
-    loadAsset(uuid: string): Promise<Object3D | Material | Texture | AudioAsset | undefined>;
+    loadAsset(uuid: string): Promise<Object3D<import("three").Event> | Texture | Material | AudioAsset | undefined>;
     private getExtension;
-    getAsset(uuid: string): Object3D | Material | Texture | AudioAsset;
+    getAsset(uuid: string): Object3D<import("three").Event> | Texture | Material | AudioAsset;
     private loadObject;
     private loadObjectFunction;
     private loadNestedPrefabs;

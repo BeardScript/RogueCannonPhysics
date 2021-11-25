@@ -11,7 +11,7 @@ export default class CannonBox extends CannonShape {
 
   protected createShape() {
     this.object3d.getWorldScale(this.worldScale);
-    
+
     this.shape = new CANNON.Box(
       new CANNON.Vec3(
         this.sizeOffset.x * (this.worldScale.x/2),

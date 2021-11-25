@@ -25,7 +25,7 @@ declare class SkyboxClass {
     get layers(): number;
     set layers(layers: number);
     get sky(): any;
-    get cubemapSky(): Mesh<import("three").Geometry | import("three").BufferGeometry, import("three").Material | import("three").Material[]>;
+    get cubemapSky(): Mesh<import("three").BufferGeometry, import("three").Material | import("three").Material[]>;
     get enabled(): boolean;
     set enabled(value: boolean);
     get mode(): 'procedural' | 'cubemap' | '360';

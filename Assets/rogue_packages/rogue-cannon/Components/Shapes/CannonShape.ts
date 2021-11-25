@@ -34,7 +34,9 @@ export default class CannonShape extends RE.Component {
     const bodyIsShape = this.object3d === this.bodyComponent.object3d;
 
     this.object3d.getWorldPosition(this.worldPos);
-    this.localPos = this.bodyComponent.object3d.worldToLocal(this.worldPos);
+    this.localPos.copy(this.worldPos);
+    this.bodyComponent.object3d.updateWorldMatrix(true, true);
+    this.bodyComponent.object3d.worldToLocal(this.localPos);
 
     let position = new CANNON.Vec3(
       this.localPos.x,
@@ -42,9 +44,12 @@ export default class CannonShape extends RE.Component {
       this.localPos.z,
     );
 
+    this.object3d.updateWorldMatrix(true, true);
+    this.object3d.getWorldQuaternion(this.worldQuaternion);
+
     this.matrixA.makeRotationFromQuaternion(this.worldQuaternion);
-    this.object3d.updateMatrixWorld();
-    this.matrixB.getInverse(this.bodyComponent.object3d.matrixWorld);
+    this.object3d.updateWorldMatrix(true, true);
+    this.matrixB.copy(this.bodyComponent.object3d.matrixWorld).invert();
     this.matrixC.extractRotation(this.matrixB);
     this.matrixA.premultiply(this.matrixC);
     this.localRot.setFromRotationMatrix(this.matrixA);

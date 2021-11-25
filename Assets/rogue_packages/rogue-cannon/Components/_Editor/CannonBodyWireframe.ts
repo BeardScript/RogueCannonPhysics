@@ -5,6 +5,7 @@ import CannonBox from '../Shapes/CannonBox.re';
 import CannonSphere from '../Shapes/CannonSphere.re';
 import CannonShape from '../Shapes/CannonShape';
 import CannonCylinder from '../Shapes/CannonCylinder.re';
+import CannonTrimesh from '../Shapes/CannonTrimesh.re';
 
 export default class CannonBodyWireframe extends RE.Component {
   static isEditorComponent = true;
@@ -12,8 +13,6 @@ export default class CannonBodyWireframe extends RE.Component {
   selectedObjects: THREE.Object3D[] = [];
   colliders: THREE.Object3D[] = [];
   wireframeMaterial = new THREE.MeshStandardMaterial({wireframe: true, emissive: new THREE.Color("#00FF00"), color: new THREE.Color("#000000")});
-
-  private objectWorldScale: THREE.Vector3 = new THREE.Vector3();
 
   private handleOnComponentAdded = {stop: () => {}};
   private handleOnComponentRemoved = {stop: () => {}};
@@ -118,10 +117,9 @@ export default class CannonBodyWireframe extends RE.Component {
     }
 
     if (component instanceof CannonCylinder) {
-      component.object3d.getWorldScale(this.objectWorldScale);
-      const radiusTop = component.radiusTopOffset * this.objectWorldScale.x
-      const radiusBottom = component.radiusBottomOffset * this.objectWorldScale.x;
-      const height = component.heightOffset;
+      const radiusTop = component.radiusTopOffset * component.object3d.scale.x;
+      const radiusBottom = component.radiusBottomOffset * component.object3d.scale.x;
+      const height = component.heightOffset * component.object3d.scale.y;
       return new THREE.Mesh(
         new THREE.CylinderBufferGeometry(radiusTop, radiusBottom, height, component.segments),
         this.wireframeMaterial,
@@ -142,6 +140,32 @@ export default class CannonBodyWireframe extends RE.Component {
       );
     }
 
+    if (component instanceof CannonTrimesh) {
+
+      if (!component.shape) component.createShape();
+
+      if (component.shape) {
+        const geometry = new THREE.BufferGeometry();
+        const mesh = new THREE.Mesh(geometry, this.wireframeMaterial);
+
+        const points: THREE.Vector3[] = [];
+
+        for (let i = 0; i < component.shape.vertices.length; i+=3) {
+          const point = new THREE.Vector3(
+            component.shape.vertices[i],
+            component.shape.vertices[i + 1],
+            component.shape.vertices[i + 2]
+          );
+
+          points.push(point);
+        }
+
+        geometry.setFromPoints(points);
+
+        return mesh;
+      }
+    }
+
     return;
   }
 
@@ -157,9 +181,11 @@ export default class CannonBodyWireframe extends RE.Component {
     }
 
     if (component instanceof CannonCylinder) {
-      const radiusTop = component.radiusTopOffset * component.object3d.scale.x
-      const radiusBottom = component.radiusBottomOffset * component.object3d.scale.x;
-      const height = component.heightOffset;
+      component.object3d.getWorldScale(mesh.scale);
+
+      const radiusTop = component.radiusTopOffset * mesh.scale.x
+      const radiusBottom = component.radiusBottomOffset * mesh.scale.x;
+      const height = component.heightOffset * mesh.scale.y;
 
       if (mesh.geometry instanceof THREE.CylinderBufferGeometry) {
         if (
@@ -169,11 +195,9 @@ export default class CannonBodyWireframe extends RE.Component {
           mesh.geometry.parameters.radialSegments !== component.segments
         ) {
           mesh.geometry.dispose();
-          mesh.geometry = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom, height, component.segments)
+          mesh.geometry = new THREE.CylinderBufferGeometry(radiusTop, radiusBottom, height, component.segments);
         }
       }
-
-      component.object3d.getWorldScale(mesh.scale);
     }
 
     if (component instanceof CannonSphere) {

@@ -147,7 +147,7 @@ export default class CannonBody extends RE.Component {
 
     this.body && (this.body.type = this.getBodyType())
 
-    this.updatePhysics();
+    this.body.type !== CANNON.BODY_TYPES.STATIC && this.updatePhysics();
   }
 
   afterUpdate() {
@@ -256,7 +256,7 @@ export default class CannonBody extends RE.Component {
 
     this.matrixA.makeRotationFromQuaternion(this.newRot);
     this.object3d.updateMatrixWorld();
-    this.matrixB.getInverse((this.object3d.parent as THREE.Object3D).matrixWorld);
+    this.matrixB.copy((this.object3d.parent as THREE.Object3D).matrixWorld).invert();
     this.matrixC.extractRotation(this.matrixB);
     this.matrixA.premultiply(this.matrixC);
     this.object3d.quaternion.setFromRotationMatrix(this.matrixA);
