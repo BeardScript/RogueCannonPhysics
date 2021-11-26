@@ -197,6 +197,7 @@ export default class CannonBody extends RE.Component {
       linearDamping: this.linearDamping,
       linearFactor: new CANNON.Vec3(this.linearFactor.x, this.linearFactor.y, this.linearFactor.z),
       angularFactor: new CANNON.Vec3(this.angularFactor.x, this.angularFactor.y, this.angularFactor.z),
+      isTrigger: this.isTrigger,
       mass: this._mass,
     });
 
