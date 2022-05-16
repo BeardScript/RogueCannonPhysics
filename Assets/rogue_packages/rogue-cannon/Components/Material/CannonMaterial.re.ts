@@ -6,8 +6,8 @@ import * as RogueCannon from '../../Lib/RogueCannon';
 export default class CannonMaterial extends RE.Component {
   material: CANNON.Material;
 
-  @RE.Prop("Number") friction: number;
-  @RE.Prop("Number") restitution: number;
+  @RE.props.num() friction: number;
+  @RE.props.num() restitution: number;
 
   awake() {
     this.createMaterial();

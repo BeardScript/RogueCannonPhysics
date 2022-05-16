@@ -4,7 +4,20 @@ import * as CANNON from 'cannon-es';
 import CannonShape from './CannonShape';
 
 export default class CannonSphere extends CannonShape {
-  @RE.Prop("Number") radiusOffset: number = 1;
+  @RE.props.num() radiusOffset: number = 1;
+
+  private _collisionResponse = true;
+  @RE.props.checkbox()
+  get collisionResponse() {
+    return this._collisionResponse;
+  };
+
+  set collisionResponse(value: boolean) {
+    this._collisionResponse = value;
+    if (!this.shape) return;
+    this.shape.collisionResponse = value;
+  };
+
   shape: CANNON.Sphere;
   bbox: THREE.Box3;
 
@@ -15,6 +28,8 @@ export default class CannonSphere extends CannonShape {
     this.shape = new CANNON.Sphere(
       this.radiusOffset * (maxSide)
     );
+
+    this.shape.collisionResponse = this._collisionResponse;
   }
 }
 

@@ -3,8 +3,8 @@ import * as CANNON from 'cannon-es';
 import CannonBody from '../CannonBody.re';
 
 export default class CannonSimpleCharacterController extends RE.Component {
-  @RE.Prop("Number") fwdSpeed = 3;
-  @RE.Prop("Number") jumpSpeed = 5;
+  @RE.props.num() fwdSpeed = 3;
+  @RE.props.num() jumpSpeed = 5;
 
   rigidbody: CannonBody | undefined;
   canJump = false;

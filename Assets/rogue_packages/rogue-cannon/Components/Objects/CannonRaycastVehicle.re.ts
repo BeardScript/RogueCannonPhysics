@@ -5,18 +5,18 @@ import CannonBody from '../CannonBody.re';
 import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonRaycastVehicle extends RE.Component {
-  @RE.Prop("Object3D") chasis: THREE.Object3D;
-  @RE.Prop("Number") mass = 500;
-  @RE.Prop("Number") suspensionStiffness = 30;
-  @RE.Prop("Number") suspensionRestLength = 0.1;
-  @RE.Prop("Number") frictionSlip = 0.7;
-  @RE.Prop("Number") dampingRelaxation: 2.3;
-  @RE.Prop("Number") dampingCompression: 4.4;
-  @RE.Prop("Number") maxSuspensionForce: 100000;
-  @RE.Prop("Number") rollInfluence: 0.01;
-  @RE.Prop("Number") maxSuspensionTravel = 0.2;
-  @RE.Prop("Number") customSlidingRotationalSpeed = -30;
-  @RE.Prop("Boolean") useCustomSlidingRotationalSpeed = true;
+  @RE.props.object3d() chasis: THREE.Object3D;
+  @RE.props.num() mass = 500;
+  @RE.props.num() suspensionStiffness = 30;
+  @RE.props.num() suspensionRestLength = 0.1;
+  @RE.props.num() frictionSlip = 0.7;
+  @RE.props.num() dampingRelaxation: 2.3;
+  @RE.props.num() dampingCompression: 4.4;
+  @RE.props.num() maxSuspensionForce: 100000;
+  @RE.props.num() rollInfluence: 0.01;
+  @RE.props.num() maxSuspensionTravel = 0.2;
+  @RE.props.num() customSlidingRotationalSpeed = -30;
+  @RE.props.checkbox() useCustomSlidingRotationalSpeed = true;
 
   vehicle: CANNON.RaycastVehicle;
 

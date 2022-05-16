@@ -6,7 +6,7 @@ import * as RogueCannon from '../../Lib/RogueCannon';
 export default class SetCannonMaterial extends RE.Component {
   material: CANNON.Material;
 
-  @RE.Prop("String") materialName: string;
+  @RE.props.text() materialName: string;
 
   start() {
     this.setMaterial();

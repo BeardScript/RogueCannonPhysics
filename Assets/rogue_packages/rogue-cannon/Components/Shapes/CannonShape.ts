@@ -18,6 +18,20 @@ export default class CannonShape extends RE.Component {
   private matrixB = new THREE.Matrix4();
   private matrixC = new THREE.Matrix4();
 
+  static findByShape(shape: CANNON.Shape) {
+    let shapeComponent: undefined | CannonShape;
+
+    RE.traverseComponents(component => {
+      if (shapeComponent) return;
+
+      if (component instanceof CannonShape && component.shape === shape) {
+        shapeComponent = component;
+      }
+    });
+
+    return shapeComponent;
+  }
+
   awake() {
     this.createShape();
   }
@@ -28,6 +42,8 @@ export default class CannonShape extends RE.Component {
     this.bodyComponent = this.getBodyComponent(this.object3d);
 
     if (!this.bodyComponent) return;
+
+    if (!this.bodyComponent.body) return;
 
     this.body = this.bodyComponent.body;
 
@@ -66,6 +82,36 @@ export default class CannonShape extends RE.Component {
     } else {
       this.body.addShape(this.shape, position, rotation);
     }
+  }
+
+  update() {
+    if (!this.shape) return;
+    if (!this.shape.body) return;
+
+    const shapeIndex = this.shape.body?.shapes.indexOf(this.shape);
+    
+    if (shapeIndex === undefined) return;
+
+    this.object3d.getWorldPosition(this.worldPos);
+    this.localPos.copy(this.worldPos);
+    this.bodyComponent?.object3d.updateWorldMatrix(true, true);
+    this.bodyComponent?.object3d.worldToLocal(this.localPos);
+
+    this.shape.body?.shapeOffsets[shapeIndex].set(
+      this.localPos.x,
+      this.localPos.y,
+      this.localPos.z
+    );
+    this.shape.updateBoundingSphereRadius();
+    this.shape.body?.updateAABB();
+  }
+
+  onDisabled() {
+    this.body?.removeShape(this.shape);
+  }
+
+  onBeforeObjectRemoved() {
+    this.body?.removeShape(this.shape);
   }
 
   private getBodyComponent(object3d: THREE.Object3D): CannonBody | undefined {

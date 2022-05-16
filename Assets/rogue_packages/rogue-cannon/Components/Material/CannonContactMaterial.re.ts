@@ -5,10 +5,10 @@ import * as RogueCannon from '../../Lib/RogueCannon';
 export default class CannonContactMaterial extends RE.Component {
   contactMaterial: CANNON.ContactMaterial;
 
-  @RE.Prop("String") materialA: string;
-  @RE.Prop("String") materialB: string;
-  @RE.Prop("Number") friction: number;
-  @RE.Prop("Number") restitution: number;
+  @RE.props.text() materialA: string;
+  @RE.props.text() materialB: string;
+  @RE.props.num() friction: number;
+  @RE.props.num() restitution: number;
 
   start() {
     this.createContactMaterial();

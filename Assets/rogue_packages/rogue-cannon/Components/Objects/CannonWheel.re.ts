@@ -2,10 +2,10 @@ import * as RE from 'rogue-engine';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import CannonRaycastVehicle from './CannonRaycastVehicle.re';
-import * as RogueCannon from '../../Lib/RogueCannon';
 
 export default class CannonWheel extends RE.Component {
-  @RE.Prop("Object3D") wheel: THREE.Object3D;
+  @RE.props.object3d() wheel: THREE.Object3D;
+  @RE.props.num() radiusOffset = 0;
 
   connectionPoint = new THREE.Vector3(0, 0, 0);
   raycastVehicle: CannonRaycastVehicle;
@@ -30,7 +30,7 @@ export default class CannonWheel extends RE.Component {
     }
 
     this.wheelInfo = new CANNON.WheelInfo({
-      radius,
+      radius: radius + this.radiusOffset,
       directionLocal: new CANNON.Vec3(0, -1, 0),
       suspensionStiffness: this.raycastVehicle.suspensionStiffness,
       suspensionRestLength: this.raycastVehicle.suspensionRestLength,
@@ -47,15 +47,9 @@ export default class CannonWheel extends RE.Component {
     });
 
     this.raycastVehicle.vehicle.wheelInfos.push(this.wheelInfo);
-
-    if (!this.wheel) return;
-
-    if (!RogueCannon.getWorld()) return;
-
-    RogueCannon.getWorld().addEventListener('postStep', this.postStep);
   }
 
-  postStep = () => {
+  afterUpdate(): void {
     if (!this.wheel) return;
 
     const wheel = this.wheelInfo;
@@ -76,10 +70,6 @@ export default class CannonWheel extends RE.Component {
     this.matrixC.extractRotation(this.matrixB);
     this.matrixA.premultiply(this.matrixC);
     this.wheel.quaternion.setFromRotationMatrix(this.matrixA);
-  }
-
-  onBeforeRemoved() {
-    RogueCannon.getWorld().removeEventListener('postStep', this.postStep);
   }
 }
 

@@ -6,10 +6,22 @@ import CannonShape from './CannonShape';
 export default class CannonCylinder extends CannonShape {
   shape: CANNON.Cylinder;
 
-  @RE.Prop("Number") radiusTopOffset = 1;
-  @RE.Prop("Number") radiusBottomOffset = 1;
-  @RE.Prop("Number") heightOffset = 1;
-  @RE.Prop("Number") segments = 100;
+  @RE.props.num() radiusTopOffset = 1;
+  @RE.props.num() radiusBottomOffset = 1;
+  @RE.props.num() heightOffset = 1;
+  @RE.props.num() segments = 100;
+
+  private _collisionResponse = true;
+  @RE.props.checkbox()
+  get collisionResponse() {
+    return this._collisionResponse;
+  };
+
+  set collisionResponse(value: boolean) {
+    this._collisionResponse = value;
+    if (!this.shape) return;
+    this.shape.collisionResponse = value;
+  };
 
   worldScale = new THREE.Vector3();
 
@@ -22,6 +34,8 @@ export default class CannonCylinder extends CannonShape {
       this.heightOffset * this.worldScale.y,
       this.segments
     );
+
+    this.shape.collisionResponse = this._collisionResponse;
   }
 }
 

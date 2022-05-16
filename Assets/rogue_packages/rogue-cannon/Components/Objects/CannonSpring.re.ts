@@ -8,12 +8,12 @@ export default class CannonSpring extends RE.Component {
   spring: CANNON.Spring;
   targetBody: CANNON.Body;
   
-  @RE.Prop("Object3D") target: THREE.Object3D;
-  @RE.Prop("Vector3") anchorA: THREE.Vector3 = new THREE.Vector3();
-  @RE.Prop("Vector3") anchorB: THREE.Vector3 = new THREE.Vector3();
-  @RE.Prop("Number") restLength: number = 0;
-  @RE.Prop("Number") stiffness: number = 50;
-  @RE.Prop("Number") damping: number = 1;
+  @RE.props.object3d() target: THREE.Object3D;
+  @RE.props.vector3() anchorA: THREE.Vector3 = new THREE.Vector3();
+  @RE.props.vector3() anchorB: THREE.Vector3 = new THREE.Vector3();
+  @RE.props.num() restLength: number = 0;
+  @RE.props.num() stiffness: number = 50;
+  @RE.props.num() damping: number = 1;
 
   start() {
     this.createSpring();

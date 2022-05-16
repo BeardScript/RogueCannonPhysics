@@ -7,8 +7,8 @@ import * as RogueCannon from '../../Lib/RogueCannon';
 export default class CannonLockConstraint extends CannonConstraint {
   constraint: CANNON.LockConstraint;
 
-  @RE.Prop("Object3D") target: THREE.Object3D;
-  @RE.Prop("Number") maxForce: number = 1e6;
+  @RE.props.object3d() target: THREE.Object3D;
+  @RE.props.num() maxForce: number = 1e6;
 
   protected createConstraint() {
     if (!this.target) throw "CannonHinge requires a target";

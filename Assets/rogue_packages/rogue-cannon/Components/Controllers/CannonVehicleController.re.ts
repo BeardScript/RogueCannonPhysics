@@ -2,10 +2,10 @@ import * as RE from 'rogue-engine';
 import CannonRaycastVehicle from '../Objects/CannonRaycastVehicle.re';
 
 export default class CannonVehicleController extends RE.Component {
-  @RE.Prop("Number") maxForce = 200;
-  @RE.Prop("Number") reverseForce = 50;
-  @RE.Prop("Number") breakForce = 250;
-  @RE.Prop("Number") maxSteering = 0.5;
+  @RE.props.num() maxForce = 200;
+  @RE.props.num() reverseForce = 50;
+  @RE.props.num() breakForce = 250;
+  @RE.props.num() maxSteering = 0.5;
 
   raycastVehicle: CannonRaycastVehicle;
 

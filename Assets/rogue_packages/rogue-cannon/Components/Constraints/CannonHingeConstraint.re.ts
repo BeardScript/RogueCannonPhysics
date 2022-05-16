@@ -7,13 +7,13 @@ import * as RogueCannon from '../../Lib/RogueCannon';
 export default class CannonHingeConstraint extends CannonConstraint {
   constraint: CANNON.HingeConstraint;
 
-  @RE.Prop("Object3D") target: THREE.Object3D;
-  @RE.Prop("Vector3") pivotA: THREE.Vector3 = new THREE.Vector3(0.1, 0, 0);
-  @RE.Prop("Vector3") axisA: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
-  @RE.Prop("Vector3") pivotB: THREE.Vector3 = new THREE.Vector3(-1, 0, 0);
-  @RE.Prop("Vector3") axisB: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
-  @RE.Prop("Boolean") collideConnected: boolean;
-  @RE.Prop("Number") maxForce: number = 1e6;
+  @RE.props.object3d() target: THREE.Object3D;
+  @RE.props.vector3() pivotA: THREE.Vector3 = new THREE.Vector3(0.1, 0, 0);
+  @RE.props.vector3() axisA: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
+  @RE.props.vector3() pivotB: THREE.Vector3 = new THREE.Vector3(-1, 0, 0);
+  @RE.props.vector3() axisB: THREE.Vector3 = new THREE.Vector3(0, 1, 0);
+  @RE.props.checkbox() collideConnected: boolean;
+  @RE.props.num() maxForce: number = 1e6;
 
   protected createConstraint() {
     if (!this.target) throw "CannonHinge requires a target";

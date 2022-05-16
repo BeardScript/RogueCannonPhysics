@@ -7,10 +7,10 @@ import * as RogueCannon from '../../Lib/RogueCannon';
 export default class CannonPointToPointConstraint extends CannonConstraint {
   constraint: CANNON.PointToPointConstraint;
 
-  @RE.Prop("Object3D") target: THREE.Object3D;
-  @RE.Prop("Vector3") privotA: THREE.Vector3 = new THREE.Vector3();
-  @RE.Prop("Vector3") privotB: THREE.Vector3 = new THREE.Vector3();
-  @RE.Prop("Number") maxForce: number = 1e6;
+  @RE.props.object3d() target: THREE.Object3D;
+  @RE.props.vector3() privotA: THREE.Vector3 = new THREE.Vector3();
+  @RE.props.vector3() privotB: THREE.Vector3 = new THREE.Vector3();
+  @RE.props.num() maxForce: number = 1e6;
 
   protected createConstraint() {
     if (!this.target) throw "CannonHinge requires a target";

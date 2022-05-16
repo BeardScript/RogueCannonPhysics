@@ -5,7 +5,19 @@ import CannonShape from './CannonShape';
 
 export default class CannonTrimesh extends CannonShape {
   shape: CANNON.Trimesh;
-  @RE.Prop("Vector3") sizeOffset: THREE.Vector3 = new THREE.Vector3(1, 1, 1);
+  @RE.props.vector3() sizeOffset: THREE.Vector3 = new THREE.Vector3(1, 1, 1);
+
+  private _collisionResponse = true;
+  @RE.props.checkbox()
+  get collisionResponse() {
+    return this._collisionResponse;
+  };
+
+  set collisionResponse(value: boolean) {
+    this._collisionResponse = value;
+    if (!this.shape) return;
+    this.shape.collisionResponse = value;
+  };
 
   worldScale = new THREE.Vector3();
   worldPos = new THREE.Vector3();
@@ -41,6 +53,8 @@ export default class CannonTrimesh extends CannonShape {
 
     const indices = Object.keys(vertices).map(Number);
     this.shape = new CANNON.Trimesh(vertices as unknown as number[], indices);
+
+    this.shape.collisionResponse = this._collisionResponse;
   }
 
   getVertices (geometry: THREE.BufferGeometry) {

@@ -5,7 +5,19 @@ import CannonShape from './CannonShape';
 
 export default class CannonBox extends CannonShape {
   shape: CANNON.Box;
-  @RE.Prop("Vector3") sizeOffset: THREE.Vector3 = new THREE.Vector3(1, 1, 1);
+  @RE.props.vector3() sizeOffset: THREE.Vector3 = new THREE.Vector3(1, 1, 1);
+
+  private _collisionResponse = true;
+  @RE.props.checkbox()
+  get collisionResponse() {
+    return this._collisionResponse;
+  };
+
+  set collisionResponse(value: boolean) {
+    this._collisionResponse = value;
+    if (!this.shape) return;
+    this.shape.collisionResponse = value;
+  };
 
   worldScale = new THREE.Vector3();
 
@@ -19,6 +31,8 @@ export default class CannonBox extends CannonShape {
         this.sizeOffset.z * (this.worldScale.z/2)
       )
     );
+
+    this.shape.collisionResponse = this._collisionResponse;
   }
 }
 

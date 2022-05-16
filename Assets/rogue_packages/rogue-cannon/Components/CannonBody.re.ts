@@ -18,7 +18,7 @@ export default class CannonBody extends RE.Component {
     "Kinematic",
   ];
 
-  @RE.Prop("Select")
+  @RE.props.select()
   get type() {
     return this._type;
   }
@@ -35,7 +35,7 @@ export default class CannonBody extends RE.Component {
     this.body && (this.body.type = type);
   }
 
-  @RE.Prop("Number") 
+  @RE.props.num() 
   get angularDamping() {
     return this._angularDamping;
   }
@@ -45,7 +45,7 @@ export default class CannonBody extends RE.Component {
     this.body && (this.body.angularDamping = value);
   }
 
-  @RE.Prop("Number")
+  @RE.props.num()
   get linearDamping() {
     return this._linearDamping;
   }
@@ -55,7 +55,7 @@ export default class CannonBody extends RE.Component {
     this.body && (this.body.linearDamping = value);
   }
 
-  @RE.Prop("Number")
+  @RE.props.num()
   get mass() {
     return this._mass;
   }
@@ -66,7 +66,7 @@ export default class CannonBody extends RE.Component {
     this.body && this.body.updateMassProperties();
   }
 
-  @RE.Prop("Vector3")
+  @RE.props.vector3()
   get linearFactor() {
     return this._linearFactor;
   }
@@ -76,7 +76,7 @@ export default class CannonBody extends RE.Component {
     this.body && (this.body.linearFactor.set(value.x, value.y, value.z));
   }
 
-  @RE.Prop("Vector3")
+  @RE.props.vector3()
   get angularFactor() {
     return this._angularFactor;
   }
@@ -86,7 +86,7 @@ export default class CannonBody extends RE.Component {
     this.body && (this.body.angularFactor.set(value.x, value.y, value.z));
   }
 
-  @RE.Prop("Boolean") 
+  @RE.props.checkbox() 
   get isTrigger() {
     return this._isTrigger;
   }
@@ -128,7 +128,9 @@ export default class CannonBody extends RE.Component {
   }
 
   awake() {
-    this.createBody();
+    if (!this.body) {
+      this.createBody();
+    }
 
     RE.Runtime.onStop(() => {
       this.handleOnCollide && this.body.removeEventListener('collide', this.handleOnCollide);
@@ -138,6 +140,10 @@ export default class CannonBody extends RE.Component {
   start() {
     RogueCannon.getWorld().addBody(this.body);
     this.copyObjectTransform();
+  }
+
+  onDisabled() {
+    RogueCannon.getWorld().removeBody(this.body);
   }
 
   update() {
@@ -161,11 +167,37 @@ export default class CannonBody extends RE.Component {
     RogueCannon.getWorld().removeBody(this.body);
   }
 
+  onCollisionEnterListeners: ((event: {other: CannonBody, contact: CANNON.ContactEquation}) => void)[] = [];
+  onCollisionStayListeners: ((event: {other: CannonBody, contact: CANNON.ContactEquation}) => void)[] = [];
+  onCollisionExitListeners: ((event: {other: CannonBody, contact: CANNON.ContactEquation}) => void)[] = [];
+
+  onCollisionEnter(cb: (event: {other: CannonBody, contact: CANNON.ContactEquation}) => void) {
+    this.onCollisionEnterListeners.push(cb);
+  }
+
+  onCollisionStay(cb: (event: {other: CannonBody, contact: CANNON.ContactEquation}) => void) {
+    this.onCollisionStayListeners.push(cb);
+  }
+
+  onCollisionExit(cb: (event: {other: CannonBody, contact: CANNON.ContactEquation}) => void) {
+    this.onCollisionExitListeners.push(cb);
+  }
+
   onCollide(callback: (event: {other: CANNON.Body, contact: CANNON.ContactEquation}) => void) {
     this.onCollideCB = callback;
 
     this.body.removeEventListener('collide', this.handleOnCollide);
     this.body.addEventListener('collide', this.handleOnCollide);
+  }
+
+  setQuaternion(quaternion: THREE.Quaternion) {
+    const q = quaternion;
+    this.body.quaternion.set(q.x, q.y, q.z, q.w);
+  }
+
+  setPosition(position: THREE.Vector3) {
+    const pos = position;
+    this.body.position.set(pos.x, pos.y, pos.z);
   }
 
   private handleOnCollide = (event: {body: CANNON.Body, target: CANNON.Body, contact: CANNON.ContactEquation}) => {
@@ -236,9 +268,9 @@ export default class CannonBody extends RE.Component {
 
   private copyBodyPosition() {
     this.newPos.set(
-      this.body.position.x,
-      this.body.position.y,
-      this.body.position.z
+      this.body.interpolatedPosition.x,
+      this.body.interpolatedPosition.y,
+      this.body.interpolatedPosition.z
     );
     
     if (!this.object3d.parent) return;
